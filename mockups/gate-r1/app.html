@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Game Day mock-up">
+<title>MOCKUP - Game Day, first Gate R batch</title>
+<style>
+/* Anything with the hidden attribute really is hidden. Must stay first and must keep !important:
+   general button styling overrode hidden in the spike. */
+[hidden]{display:none!important}
+
+:root{--h:100vh}
+@supports (height:100svh){:root{--h:100svh}}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;height:100%}
+body{font-family:-apple-system,"Helvetica Neue",Arial,sans-serif;background:#fff;color:#111;font-size:16px;-webkit-text-size-adjust:100%;-webkit-tap-highlight-color:transparent}
+body.lock{position:fixed;left:0;right:0;top:0;bottom:0;overflow:hidden;overscroll-behavior:none}
+body.nomove,body.nomove *{touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+button{-webkit-appearance:none;appearance:none;font:inherit;color:inherit;margin:0;cursor:pointer}
+
+#frame{background:#fff;width:100%}
+#frame.flow{min-height:var(--h)}
+#frame.fix{height:var(--h);display:flex;flex-direction:column;overflow:hidden}
+#frame.fix #screen{flex:1;min-height:0;display:flex;flex-direction:column}
+@media (min-width:500px){
+  html,body{background:#d9d9d9}
+  #frame{width:393px;margin:0 auto}
+  #frame.fix{height:min(var(--h),852px)}
+}
+
+/* Mock-up label, outside the real screen */
+#bar{display:flex;align-items:center;gap:8px;flex:none;height:calc(28px + env(safe-area-inset-top));padding:env(safe-area-inset-top) 8px 0;background:#111;color:#fff;font-size:12px;white-space:nowrap;overflow:hidden}
+#bar .mk{background:#ffd400;color:#111;font-weight:700;padding:2px 6px;border-radius:4px}
+#bar .sp{flex:1}
+#bar a,#bar button{color:#9cc4ff;background:none;border:0;padding:6px 0;font-size:12px;text-decoration:underline}
+
+/* Common parts */
+.hdr{display:flex;align-items:center;gap:8px;flex:none;min-height:53px;padding:4px 12px;border-bottom:2px solid #111;background:#fff}
+.hdr h1{margin:0;font-size:20px;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.back{flex:none;width:48px;height:44px;border:2px solid #111;border-radius:10px;background:#fff;font-size:26px;font-weight:700;line-height:1;padding:0 0 4px}
+.tag{flex:none;background:#111;color:#fff;border-radius:6px;padding:2px 7px;font-size:12px;font-weight:800}
+.body{padding:12px;display:flex;flex-direction:column;gap:12px}
+.btn{display:flex;align-items:center;justify-content:center;width:100%;min-height:54px;border:2px solid #111;border-radius:12px;background:#fff;color:#111;font-size:18px;font-weight:800;padding:6px 12px;text-align:center}
+.btn.pri{background:#111;color:#fff}
+.btn.big{min-height:60px}
+.btn.del{background:#b00020;border-color:#b00020;color:#fff}
+.btn[disabled]{background:#fff;color:#666;border:2px dashed #666;opacity:1;cursor:default}
+.acts{flex:none;padding:8px 12px calc(8px + env(safe-area-inset-bottom));border-top:2px solid #111;background:#fff}
+.acts .btn{min-height:56px;font-size:20px}
+.msg{font-size:22px;font-weight:800;text-align:center;padding:28px 0 4px}
+.av{width:100%;height:100%;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:17px;color:#111;border:2px solid #333}
+.c0{background:#cfe3ff}.c1{background:#ffd9c2}.c2{background:#d7f0cf}.c3{background:#f5d0ee}.c4{background:#fff0a8}.c5{background:#cdeff0}.c6{background:#e1d4ff}.c7{background:#e6e6e6}
+
+/* Home */
+.card{border:2px solid #111;border-radius:12px;padding:10px;background:#f1f1f1;display:flex;flex-direction:column;gap:3px;overflow-wrap:anywhere}
+.card b{font-size:18px}
+.card .btn{margin-top:8px}
+
+/* Squad */
+.list{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;padding:8px 12px;display:flex;flex-direction:column;gap:5px}
+.prow{display:flex;flex:none;align-items:center;gap:10px;min-height:54px;padding:4px 8px;border:1px solid #888;border-radius:10px;background:#f4f4f4}
+.prow .av{flex:none;width:36px;height:36px;font-size:13px}
+.prow .pn{flex:1;min-width:0;font-weight:700;overflow-wrap:anywhere}
+.prow .btn{flex:none;width:auto;min-width:64px;min-height:44px;font-size:15px;padding:0 10px}
+
+/* Forms */
+.f label{display:flex;justify-content:space-between;font-size:14px;font-weight:700;margin-bottom:3px}
+.f input{display:block;width:100%;min-width:0;min-height:52px;font-family:inherit;font-size:18px;color:#111;background:#fff;border:2px solid #111;border-radius:10px;padding:10px 12px;-webkit-appearance:none;appearance:none;margin:0}
+.f input::-webkit-date-and-time-value{text-align:left;min-height:1.3em}
+.f.need input{border:4px solid #b00020;padding:8px 10px}
+.f .nw{color:#b00020;font-weight:800}
+.gapbig{margin-top:44px}
+
+/* Warning */
+.scrim{position:fixed;left:0;right:0;top:0;bottom:0;z-index:20;background:rgba(0,0,0,.5);display:flex;align-items:flex-end;justify-content:center}
+.sheet{width:100%;max-width:393px;background:#fff;border-top:3px solid #111;border-radius:18px 18px 0 0;padding:16px 12px calc(14px + env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:10px}
+.sheet h2{margin:0 0 4px;font-size:22px;text-align:center;overflow-wrap:anywhere}
+
+/* Line-up */
+.lu{flex:1;min-height:0;display:flex;flex-direction:column;gap:6px;padding:6px 10px}
+.pitch{flex:1 1 0;min-height:0;position:relative;display:grid;grid-template-rows:repeat(4,minmax(0,1fr));border:2px solid #111;border-radius:10px;background:#e6f0e0}
+.pitch:before{content:"";position:absolute;left:0;right:0;top:50%;border-top:2px solid #b5c4ac;pointer-events:none}
+.line{position:relative;display:flex;justify-content:center;align-items:stretch;min-height:0}
+.slot{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;min-width:0}
+.line .slot{flex:0 0 33.33%;max-width:33.33%}
+.ci{position:relative;flex:none;width:48px;height:48px}
+.nm{width:100%;margin-top:2px;padding:0 2px;text-align:center;font-size:14px;font-weight:800;line-height:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gk{position:absolute;right:-9px;top:-7px;width:24px;height:24px;border-radius:50%;background:#fff;border:2px solid #111;font-size:12px;line-height:1;display:flex;align-items:center;justify-content:center}
+.em{background:transparent;border:2px dashed #555}
+.tight .ci{width:40px;height:40px}
+.tight .av{font-size:15px}
+.tight .nm{font-size:13px;line-height:15px}
+.row{position:relative;flex:none;display:flex;flex-wrap:wrap;justify-content:space-around;min-height:22px;padding:15px 4px 2px;border:2px solid #111;border-radius:10px;background:#fafafa}
+.row .t{position:absolute;left:8px;top:1px;font-size:11px;font-weight:800;line-height:14px}
+.row .slot{flex:0 0 16.6%;max-width:16.6%;padding:2px 0}
+.row .ci{width:44px;height:44px}
+.row .av{font-size:15px}
+.row .nm{font-size:13px}
+.row.ab{border-style:dashed}
+.row.ab .av{border-style:dashed;border-color:#111}
+.row.ab .nm{color:#333}
+.sel .av,.drop .av{border:4px solid #111;box-shadow:0 0 0 4px #ffd400}
+.src .av{opacity:.4}
+
+/* Drag layer */
+#layer{position:fixed;left:0;top:0;right:0;bottom:0;z-index:50;pointer-events:none}
+#layer svg{position:absolute;left:0;top:0;width:100%;height:100%}
+#ghost{position:absolute;left:0;top:0;width:56px;height:56px;margin:-28px 0 0 -28px;will-change:transform}
+#ghost .av{border:3px solid #111;box-shadow:0 3px 8px rgba(0,0,0,.45)}
+</style>
+</head>
+<body>
+<div id="frame"><div id="bar"></div><div id="screen"></div></div>
+<div id="layer" hidden><svg><line id="ln" stroke="#111" stroke-width="5" stroke-linecap="round"></line></svg><div id="ghost"></div></div>
+<script>
+(function(){
+'use strict';
+
+/* ---------- Sample data (all names made up) ---------- */
+var COL=['c0','c1','c2','c3','c4','c5','c6','c7'];
+var SQ13=[['Alex',0],['Avery',4],['Casey',3],['Drew',1],['Jamie',0],['Jordan',2],['Kit',3],['Morgan',5],['Quinn',7],['Riley',4],['Robin',2],['Sam',1],['Thaddeus-Alexander',6]];
+var LONG1='Bartholomew-Maximilian Christopher Alfie';   /* 40 characters */
+var LONG2='Theodore-Maximilian Christopher Benjamin';   /* 40 characters */
+var LONG3='Wilhelmina-Josephine Christabel Annelise'; /* 40 characters */
+var SIX=['Extra','Kit','Morgan','Quinn','Sam','Thaddeus-Alexander'];
+var LONG_OPP='Northern Districts Juniors Football U10s'; /* 40 characters */
+var LONG_VEN='Riverside Recreation Reserve, Top Oval 3'; /* 40 characters */
+var DAYS=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+var MONTHS=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+var GHOST_LIFT=36;   /* the floating circle sits above the thumb so the thumb does not hide it */
+var DROP_RADIUS=46;  /* how close to a circle counts as "on" it */
+
+/* ---------- State: held in memory only, gone on reload ---------- */
+var S;
+function fresh(){
+  return {screen:'home',players:[],games:[],nextId:1,nextGame:1,nextCol:5,form:null,editId:null,warn:false,from:'home',sel:null,gameId:null,lock:0};
+}
+function el(id){return document.getElementById(id);}
+function esc(t){return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function initials(n){return n.slice(0,2).toUpperCase();}
+function byName(a,b){var x=a.name.toLowerCase(),y=b.name.toLowerCase();return x<y?-1:(x>y?1:a.id-b.id);}
+function sorted(){return S.players.slice().sort(byName);}
+function P(id){for(var i=0;i<S.players.length;i++){if(S.players[i].id===id)return S.players[i];}return null;}
+function idOf(name){for(var i=0;i<S.players.length;i++){if(S.players[i].name===name)return S.players[i].id;}return null;}
+function addP(name,col){
+  var c=(col===undefined||col===null)?(S.nextCol++%8):col;
+  var p={id:S.nextId++,name:name,col:c};
+  S.players.push(p);
+  return p;
+}
+function removeP(id){
+  S.players=S.players.filter(function(p){return p.id!==id;});
+  S.games.forEach(function(g){
+    g.pos=g.pos.map(function(x){return x===id?null:x;});
+    g.absent=g.absent.filter(function(x){return x!==id;});
+  });
+}
+/* pos index: 0 goal, 1-3 defence, 4-6 midfield, 7-8 forwards, each left to right */
+function addGame(date,time,opp,venue){
+  var s=sorted(),pos=[];
+  for(var i=0;i<9;i++){pos.push(s[i]?s[i].id:null);}
+  var g={id:S.nextGame++,date:date,time:time,opp:opp,venue:venue,formation:'3-3-2',halfMinutes:25,pos:pos,absent:[],secondHalf:'not planned'};
+  S.games.push(g);
+  return g;
+}
+function cur(){for(var i=0;i<S.games.length;i++){if(S.games[i].id===S.gameId)return S.games[i];}return null;}
+function benchOf(g){return sorted().filter(function(p){return g.pos.indexOf(p.id)<0&&g.absent.indexOf(p.id)<0;});}
+function absentOf(g){return sorted().filter(function(p){return g.absent.indexOf(p.id)>=0;});}
+function gamesInOrder(){
+  return S.games.slice().sort(function(a,b){
+    var x=a.date+a.time,y=b.date+b.time;
+    return x<y?-1:(x>y?1:a.id-b.id);
+  });
+}
+function fmtDate(d){
+  var p=d.split('-'),dt=new Date(+p[0],+p[1]-1,+p[2]);
+  return DAYS[dt.getDay()]+' '+(+p[2])+' '+MONTHS[+p[1]-1];
+}
+function fmtTime(t){
+  var p=t.split(':'),h=+p[0],ap=h<12?'am':'pm',h12=h%12===0?12:h%12;
+  return h12+':'+p[1]+' '+ap;
+}
+
+/* ---------- Starting points for the index page ---------- */
+function squad13(){SQ13.forEach(function(x){addP(x[0],x[1]);});}
+function squad15(){squad13();addP('Blake');addP('Extra');}
+function squadN(n){SQ13.slice(0,n).forEach(function(x){addP(x[0],x[1]);});}
+function rovers(){return addGame('2026-11-14','08:30','Rovers U10','Oakwood Park, Field 2');}
+function hawks(){return addGame('2026-11-21','10:00','Hawks U10','Riverside Reserve');}
+function openLine(g,screen){S.gameId=g.id;S.screen=screen||'lineup';}
+function markAbsent(g,names){
+  names.forEach(function(n){
+    var id=idOf(n),i=g.pos.indexOf(id);
+    if(i>=0){g.pos[i]=null;}
+    g.absent.push(id);
+  });
+}
+function keyOf(g,name){
+  var id=idOf(name),i=g.pos.indexOf(id);
+  if(i>=0)return 'p'+i;
+  return (g.absent.indexOf(id)>=0?'a':'b')+id;
+}
+function blankForm(){return {date:'',time:'',opp:'',venue:'',marks:{}};}
+function sampleForm(){return {date:'2026-11-14',time:'08:30',opp:'Rovers U10',venue:'Oakwood Park, Field 2',marks:{}};}
+
+var SEEDS={
+  'first':function(){S.screen='home';},
+  'add':function(){squad13();S.from='squad';S.screen='add';},
+  'squad':function(){squad13();S.screen='squad';},
+  'squad15':function(){squad15();S.screen='squad';},
+  'squad-long':function(){squad13();addP(LONG1);S.screen='squad';},
+  'two-sams':function(){squad13();addP('Sam');S.screen='squad';},
+  'squad1':function(){addP('Casey',3);S.screen='squad';},
+  'squad0':function(){S.screen='squad';},
+  'edit':function(){squad13();S.editId=idOf('Casey');S.screen='edit';},
+  'remove-warning':function(){squad13();S.editId=idOf('Casey');S.warn=true;S.screen='edit';},
+  'home-empty-games':function(){squad13();rovers();hawks();S.players.slice().forEach(function(p){removeP(p.id);});S.screen='home';},
+  'home':function(){squad13();S.screen='home';},
+  'create':function(){squad13();S.form=blankForm();S.screen='create';},
+  'create-needed':function(){squad13();S.form=blankForm();S.form.date='2026-11-14';S.form.time='08:30';S.form.marks={opp:true};S.screen='create';},
+  'create-filled':function(){squad13();S.form=sampleForm();S.screen='create';},
+  'home-1':function(){squad13();rovers();S.screen='home';},
+  'home-2':function(){squad13();hawks();rovers();S.screen='home';},
+  'home-long':function(){squad13();addGame('2026-11-14','08:30',LONG_OPP,LONG_VEN);S.screen='home';},
+  'lineup':function(){squad13();openLine(rovers());},
+  'drag-test':function(){squad13();openLine(rovers());},
+  'selected-bench':function(){squad13();var g=rovers();openLine(g);S.sel=keyOf(g,'Riley');},
+  'selected-field':function(){squad13();var g=rovers();openLine(g);S.sel=keyOf(g,'Kit');},
+  'absent-bench':function(){squad13();var g=rovers();markAbsent(g,['Sam']);openLine(g);},
+  'absent-pitch':function(){squad13();var g=rovers();markAbsent(g,['Kit']);openLine(g);},
+  'absent-two':function(){squad13();var g=rovers();markAbsent(g,['Sam','Kit']);openLine(g);},
+  'selected-absent':function(){squad13();var g=rovers();markAbsent(g,['Kit','Sam']);openLine(g);S.sel=keyOf(g,'Kit');},
+  'keeper-absent':function(){squad13();var g=rovers();markAbsent(g,['Alex']);openLine(g);},
+  'bench-all-absent':function(){squad13();var g=rovers();markAbsent(g,['Riley','Robin','Sam','Thaddeus-Alexander']);openLine(g);},
+  'keeper-swapped':function(){squad13();var g=rovers();g.pos[0]=idOf('Riley');openLine(g);},
+  'seven':function(){squadN(7);openLine(rovers());},
+  'nine':function(){squadN(9);openLine(rovers());},
+  'one':function(){squadN(1);openLine(rovers());},
+  'fifteen':function(){squad15();openLine(rovers());},
+  'fifteen-1':function(){squad15();var g=rovers();markAbsent(g,['Sam']);openLine(g);},
+  'fifteen-1-selected':function(){squad15();var g=rovers();markAbsent(g,['Sam']);openLine(g);S.sel=keyOf(g,'Kit');},
+  'fifteen-6':function(){squad15();var g=rovers();markAbsent(g,SIX);openLine(g);},
+  'fifteen-6-selected':function(){squad15();var g=rovers();markAbsent(g,SIX);openLine(g);S.sel=keyOf(g,'Sam');},
+  'long':function(){squad13();addP(LONG1);addP(LONG2);addP(LONG3);var g=rovers();markAbsent(g,[LONG3]);openLine(g);},
+  'ready':function(){squad13();openLine(rovers(),'ready');},
+  'ready-gaps':function(){squad13();var g=rovers();markAbsent(g,['Alex','Kit']);openLine(g,'ready');}
+};
+
+/* ---------- Screens ---------- */
+function hdr(title,back,right){
+  return '<div class="hdr">'+(back?'<button class="back" data-a="'+back+'" aria-label="Back">&lsaquo;</button>':'')+'<h1>'+title+'</h1>'+(right||'')+'</div>';
+}
+function card(g){
+  return '<div class="card"><b>vs '+esc(g.opp)+'</b><div>'+fmtDate(g.date)+' &middot; '+fmtTime(g.time)+'</div><div>'+esc(g.venue)+'</div>'+
+    '<button class="btn" data-a="line" data-id="'+g.id+'">Line-up</button></div>';
+}
+function circle(p,keeper){
+  return '<div class="ci"><div class="av '+COL[p.col]+'">'+esc(initials(p.name))+'</div>'+(keeper?'<span class="gk">&#129508;</span>':'')+'</div>';
+}
+function slotPos(g,i,readOnly){
+  var id=g.pos[i],p=id?P(id):null,k='p'+i;
+  var attrs='class="slot'+(S.sel===k?' sel':'')+'"'+(readOnly?'':' data-k="'+k+'"');
+  if(!p){return '<div '+attrs+'><div class="ci"><div class="av em"></div></div><div class="nm">&nbsp;</div></div>';}
+  return '<div '+attrs+'>'+circle(p,i===0)+'<div class="nm">'+esc(p.name)+'</div></div>';
+}
+function slotRow(p,prefix,readOnly){
+  var k=prefix+p.id;
+  return '<div class="slot'+(S.sel===k?' sel':'')+'"'+(readOnly?'':' data-k="'+k+'"')+'>'+circle(p,false)+'<div class="nm">'+esc(p.name)+'</div></div>';
+}
+function lineBody(g,readOnly){
+  var bench=benchOf(g),absent=readOnly?[]:absentOf(g);
+  var tight=absent.length>6||bench.length>6;
+  function line(list){return '<div class="line">'+list.map(function(i){return slotPos(g,i,readOnly);}).join('')+'</div>';}
+  var h='<div class="lu"><div class="pitch'+(tight?' tight':'')+'">'+line([7,8])+line([4,5,6])+line([1,2,3])+line([0])+'</div>';
+  h+='<div class="row"><span class="t">BENCH</span>'+bench.map(function(p){return slotRow(p,'b',readOnly);}).join('')+'</div>';
+  if(absent.length){h+='<div class="row ab"><span class="t">ABSENT</span>'+absent.map(function(p){return slotRow(p,'a',readOnly);}).join('')+'</div>';}
+  return h+'</div>';
+}
+function field(key,label,type,extra){
+  var f=S.form,on=!!f.marks[key];
+  return '<div class="f'+(on?' need':'')+'" id="f-'+key+'"><label for="i-'+key+'"><span>'+label+'</span><span class="nw"'+(on?'':' hidden')+'>Needed</span></label>'+
+    '<input id="i-'+key+'" data-f="'+key+'" type="'+type+'" value="'+esc(f[key])+'" '+(extra||'')+'></div>';
+}
+function formOk(){
+  var f=S.form;
+  return !!(f.date&&f.time&&f.opp.trim()&&f.venue.trim());
+}
+
+var VIEWS={
+  home:function(){
+    var has=S.players.length>0,h=hdr('Game Day')+'<div class="body">';
+    if(has){h+='<button class="btn pri big" data-a="create">+ Create game</button>';}
+    h+=gamesInOrder().map(card).join('');
+    if(has){h+='<button class="btn" data-a="squad">Squad ('+S.players.length+')</button>';}
+    else{h+='<div class="msg">Add your players</div><button class="btn pri big" data-a="addHome">+ Add players</button>';}
+    return {tags:'GDA-51 GDA-54 GDA-18',html:h+'</div>'};
+  },
+  squad:function(){
+    var rows=sorted().map(function(p){
+      return '<div class="prow"><div class="av '+COL[p.col]+'">'+esc(initials(p.name))+'</div><span class="pn">'+esc(p.name)+'</span>'+
+        '<button class="btn" data-a="edit" data-id="'+p.id+'">Edit</button></div>';
+    }).join('');
+    return {fix:true,tags:'GDA-51',
+      tool:S.players.length<13?'<button data-a="sampleSquad">Sample squad</button>':'',
+      html:hdr('Squad ('+S.players.length+')','home')+'<div class="list">'+rows+'</div><div class="acts"><button class="btn pri" data-a="addSquad">+ Add player</button></div>'};
+  },
+  add:function(){
+    return {tags:'GDA-51',html:hdr('Add player','addBack')+'<div class="body"><div class="f"><label for="nm"><span>First name</span></label>'+
+      '<input id="nm" type="text" autocomplete="off" autocapitalize="words" autocorrect="off" spellcheck="false" data-auto="1"></div>'+
+      '<button class="btn pri" id="save" data-a="saveAdd" disabled>Save</button></div>'};
+  },
+  edit:function(){
+    var p=P(S.editId);
+    return {tags:'GDA-51',html:hdr('Edit player','squad')+'<div class="body"><div class="f"><label for="nm"><span>First name</span></label>'+
+      '<input id="nm" type="text" value="'+esc(p.name)+'" autocomplete="off" autocapitalize="words" autocorrect="off" spellcheck="false"></div>'+
+      '<button class="btn pri" id="save" data-a="saveEdit">Save</button>'+
+      '<button class="btn gapbig" data-a="askRemove">Remove from squad</button></div>'+
+      '<div class="scrim" id="warn"'+(S.warn?'':' hidden')+'><div class="sheet"><h2>Remove '+esc(p.name)+'?</h2>'+
+      '<button class="btn del" data-a="doRemove">Remove</button><button class="btn" data-a="cancelRemove">Cancel</button></div></div>'};
+  },
+  create:function(){
+    var txt='autocomplete="off" autocapitalize="words" autocorrect="off" spellcheck="false"';
+    return {tags:'GDA-54',tool:'<button data-a="sampleGame">Sample game</button>',
+      html:hdr('New game','home')+'<div class="body">'+field('date','Date','date')+field('time','Kick-off','time')+field('opp','Opposition','text',txt)+field('venue','Venue','text',txt)+
+      '<button class="btn pri big" id="make" data-a="makeGame"'+(formOk()?'':' disabled')+'>Create game</button></div>'};
+  },
+  lineup:function(){
+    var g=cur();
+    return {fix:true,line:true,tags:'GDA-18 GDA-19',
+      html:hdr('1st-half line-up','home','<span class="tag">'+esc(g.formation)+'</span>')+lineBody(g,false)+
+      '<div class="acts"><button class="btn pri" id="bReady" data-a="ready">Ready for kick-off</button>'+
+      '<button class="btn pri" id="bAbsent" data-a="absent" hidden>Absent</button>'+
+      '<button class="btn pri" id="bBack" data-a="backIn" hidden>Back in</button></div>'};
+  },
+  ready:function(){
+    var g=cur();
+    return {fix:true,line:true,tags:'GDA-19',
+      html:hdr('vs '+esc(g.opp))+lineBody(g,true)+'<div class="acts"><button class="btn" data-a="toLine">Line-up</button></div>'};
+  }
+};
+
+var rendering=false;
+function syncBar(){
+  var kind=S.sel?S.sel.charAt(0):'';
+  var r=el('bReady'),a=el('bAbsent'),b=el('bBack');
+  if(!r){return;}
+  r.hidden=!!S.sel;
+  a.hidden=!(kind==='p'||kind==='b');
+  b.hidden=kind!=='a';
+}
+function render(){
+  var v=VIEWS[S.screen]();
+  el('bar').innerHTML='<span class="mk">MOCKUP &mdash; not functional</span><span>'+v.tags+'</span><span class="sp"></span>'+(v.tool||'')+'<a href="index.html">Index</a>';
+  rendering=true;   /* replacing a focused field fires focusout: it must not touch the form */
+  el('screen').innerHTML=v.html;
+  rendering=false;
+  el('frame').className=v.fix?'fix':'flow';
+  document.body.className=(v.fix?'lock':'')+(v.line?' nomove':'');
+  syncBar();
+}
+function nav(screen){
+  S.screen=screen;
+  S.sel=null;
+  S.lock=Date.now()+300;   /* a fast double tap cannot act twice or hit the next screen */
+  render();
+  window.scrollTo(0,0);
+  var a=document.querySelector('[data-auto]');
+  if(a){a.focus();}
+}
+
+/* ---------- Line-up rules ---------- */
+function moveKeys(a,b){
+  var g=cur(),ka=a.charAt(0),kb=b.charAt(0),va=+a.slice(1),vb=+b.slice(1);
+  if(ka==='p'&&kb==='p'){var t=g.pos[va];g.pos[va]=g.pos[vb];g.pos[vb]=t;}
+  else if(ka==='b'&&kb==='p'){g.pos[vb]=va;}
+  else if(ka==='p'&&kb==='b'){g.pos[va]=vb;}
+  /* whoever is displaced is on the bench automatically: the bench is everyone not placed and not absent */
+}
+function isEmptyPos(k){return k.charAt(0)==='p'&&cur().pos[+k.slice(1)]===null;}
+function tap(k){
+  var sel=S.sel,kk=k.charAt(0),empty=isEmptyPos(k);
+  if(!sel){if(!empty){S.sel=k;}render();return;}
+  if(sel===k){S.sel=null;render();return;}
+  var ks=sel.charAt(0);
+  if(empty){
+    if(ks!=='a'){moveKeys(sel,k);S.sel=null;}
+    render();return;
+  }
+  if((ks==='a'&&kk==='a')||(ks==='b'&&kk==='b')){S.sel=k;render();return;}
+  if(ks==='a'||kk==='a'){return;}   /* changes nothing: the first player stays selected */
+  moveKeys(sel,k);S.sel=null;render();
+}
+function canDrag(k){
+  var c=k.charAt(0);
+  return c==='b'||(c==='p'&&!isEmptyPos(k));
+}
+function validDrop(src,tgt){
+  var s=src.charAt(0),t=tgt.charAt(0);
+  if(t==='a'){return false;}
+  if(t==='b'){return s==='p';}
+  return true;
+}
+function playerAt(k){
+  return k.charAt(0)==='p'?P(cur().pos[+k.slice(1)]):P(+k.slice(1));
+}
+
+/* ---------- Drag and tap: pointer events, one path for finger and mouse ---------- */
+var drag=null;
+function centre(n){
+  var r=n.querySelector('.ci').getBoundingClientRect();
+  return {x:r.left+r.width/2,y:r.top+r.height/2};
+}
+function startDrag(){
+  var d=drag;
+  d.on=true;
+  S.sel=null;
+  var old=document.querySelector('.slot.sel');
+  if(old){old.classList.remove('sel');}
+  syncBar();
+  d.el.classList.add('src');
+  var c=centre(d.el);
+  d.targets=[];
+  Array.prototype.forEach.call(document.querySelectorAll('[data-k]'),function(n){
+    if(n!==d.el&&validDrop(d.k,n.getAttribute('data-k'))){
+      var t=centre(n);
+      d.targets.push({n:n,k:n.getAttribute('data-k'),x:t.x,y:t.y});
+    }
+  });
+  var p=playerAt(d.k);
+  el('ghost').innerHTML='<div class="av '+COL[p.col]+'">'+esc(initials(p.name))+'</div>';
+  var ln=el('ln');
+  ln.setAttribute('x1',c.x);
+  ln.setAttribute('y1',c.y);
+  el('layer').hidden=false;
+}
+function moveDrag(x,y){
+  var d=drag,gy=y-d.lift;
+  el('ghost').style.transform='translate('+x+'px,'+gy+'px)';
+  var ln=el('ln');
+  ln.setAttribute('x2',x);
+  ln.setAttribute('y2',gy);
+  var best=null,bd=DROP_RADIUS*DROP_RADIUS;
+  d.targets.forEach(function(t){
+    var dx=t.x-x,dy=t.y-gy,dist=dx*dx+dy*dy;
+    if(dist<bd){bd=dist;best=t;}
+  });
+  if(best!==d.hit){
+    if(d.hit){d.hit.n.classList.remove('drop');}
+    if(best){best.n.classList.add('drop');}
+    d.hit=best;
+  }
+}
+function finish(apply){
+  var d=drag;
+  drag=null;
+  if(d.on){
+    el('layer').hidden=true;
+    if(apply&&d.hit){moveKeys(d.k,d.hit.k);}
+    render();
+  }else if(apply&&!d.far){
+    tap(d.k);
+  }
+}
+document.addEventListener('pointerdown',function(e){
+  if(drag||S.screen!=='lineup'||Date.now()<S.lock){return;}
+  if(e.pointerType==='mouse'&&e.button!==0){return;}
+  var n=e.target.closest?e.target.closest('[data-k]'):null;
+  if(!n){return;}
+  drag={id:e.pointerId,k:n.getAttribute('data-k'),el:n,x:e.clientX,y:e.clientY,on:false,far:false,lift:e.pointerType==='mouse'?0:GHOST_LIFT,targets:[],hit:null};
+});
+document.addEventListener('pointermove',function(e){
+  if(!drag||e.pointerId!==drag.id){return;}
+  if(!drag.on){
+    var dx=e.clientX-drag.x,dy=e.clientY-drag.y;
+    if(dx*dx+dy*dy<64){return;}
+    drag.far=true;
+    if(!canDrag(drag.k)){return;}
+    startDrag();
+  }
+  e.preventDefault();
+  moveDrag(e.clientX,e.clientY);
+});
+document.addEventListener('pointerup',function(e){
+  if(drag&&e.pointerId===drag.id){finish(true);}
+});
+document.addEventListener('pointercancel',function(e){
+  if(drag&&e.pointerId===drag.id){finish(false);}
+});
+/* Guards so the page cannot scroll, zoom or select text on the line-up. Must be non-passive. */
+function guarded(){return document.body.classList.contains('nomove');}
+document.addEventListener('touchmove',function(e){if(guarded()){e.preventDefault();}},{passive:false});
+['gesturestart','selectstart','contextmenu','dragstart'].forEach(function(t){
+  document.addEventListener(t,function(e){if(guarded()){e.preventDefault();}},{passive:false});
+});
+
+/* ---------- Buttons ---------- */
+var ACT={
+  home:function(){nav('home');},
+  squad:function(){nav('squad');},
+  addHome:function(){S.from='home';nav('add');},
+  addSquad:function(){S.from='squad';nav('add');},
+  addBack:function(){nav(S.from);},
+  saveAdd:function(){
+    var v=el('nm').value.trim();
+    if(!v){return;}
+    addP(v);
+    nav('squad');
+  },
+  edit:function(n){S.editId=+n.getAttribute('data-id');S.warn=false;nav('edit');},
+  saveEdit:function(){
+    var v=el('nm').value.trim();
+    if(!v){return;}
+    P(S.editId).name=v;
+    nav('squad');
+  },
+  askRemove:function(){
+    if(document.activeElement){document.activeElement.blur();}
+    el('warn').hidden=false;
+  },
+  cancelRemove:function(){el('warn').hidden=true;},
+  doRemove:function(){removeP(S.editId);S.editId=null;nav('squad');},
+  sampleSquad:function(){
+    SQ13.forEach(function(x){
+      var seen=S.players.some(function(p){return p.name.toLowerCase()===x[0].toLowerCase();});
+      if(!seen){addP(x[0],x[1]);}
+    });
+    render();
+  },
+  create:function(){S.form=blankForm();nav('create');},
+  sampleGame:function(){S.form=sampleForm();render();},
+  makeGame:function(){
+    if(!formOk()){return;}
+    var f=S.form,g=addGame(f.date,f.time,f.opp.trim(),f.venue.trim());
+    S.gameId=g.id;
+    S.form=null;
+    nav('lineup');
+  },
+  line:function(n){S.gameId=+n.getAttribute('data-id');nav('lineup');},
+  ready:function(){nav('ready');},
+  toLine:function(){nav('lineup');},
+  absent:function(){
+    var g=cur(),k=S.sel,id;
+    if(!k){return;}
+    if(k.charAt(0)==='p'){var i=+k.slice(1);id=g.pos[i];g.pos[i]=null;}
+    else{id=+k.slice(1);}
+    g.absent.push(id);
+    S.sel=null;
+    render();
+  },
+  backIn:function(){
+    var g=cur(),k=S.sel;
+    if(!k){return;}
+    var id=+k.slice(1);
+    g.absent=g.absent.filter(function(x){return x!==id;});
+    S.sel=null;
+    render();
+  }
+};
+document.addEventListener('click',function(e){
+  var n=e.target.closest?e.target.closest('[data-a]'):null;
+  if(!n||n.disabled||Date.now()<S.lock){return;}
+  e.preventDefault();
+  ACT[n.getAttribute('data-a')](n);
+});
+
+/* ---------- Form fields ---------- */
+function setNeed(key,on){
+  S.form.marks[key]=on;
+  var w=el('f-'+key);
+  w.classList.toggle('need',on);
+  w.querySelector('.nw').hidden=!on;
+}
+function onField(e){
+  var t=e.target;
+  if(t.id==='nm'){el('save').disabled=!t.value.trim();return;}
+  var key=t.getAttribute&&t.getAttribute('data-f');
+  if(!key||!S.form){return;}
+  S.form[key]=t.value;
+  if(t.value.trim()){setNeed(key,false);}
+  el('make').disabled=!formOk();
+}
+document.addEventListener('input',onField);
+document.addEventListener('change',onField);
+document.addEventListener('focusout',function(e){
+  var t=e.target,key=t.getAttribute&&t.getAttribute('data-f');
+  if(rendering||!key||!S.form){return;}
+  S.form[key]=t.value;
+  if(!t.value.trim()){setNeed(key,true);}
+});
+
+/* ---------- Start ---------- */
+function boot(){
+  var h=location.hash.slice(1);
+  if(!Object.prototype.hasOwnProperty.call(SEEDS,h)){h='first';}
+  S=fresh();
+  SEEDS[h]();
+  render();
+  window.scrollTo(0,0);
+}
+window.addEventListener('hashchange',boot);
+boot();
+})();
+</script>
+</body>
+</html>
