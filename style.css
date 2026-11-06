@@ -1,0 +1,108 @@
+/* Spike styling: readable in daylight, big tap targets, portrait phone. */
+* { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  color: #111;
+  background: #fff;
+  font: 18px/1.35 -apple-system, system-ui, sans-serif;
+}
+
+#status {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  padding: calc(env(safe-area-inset-top) + 8px) 12px 8px;
+  background: #e9f3ee;
+  border-bottom: 2px solid #0b5d3b;
+}
+
+.top-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.version { font-size: 34px; font-weight: 800; line-height: 1.1; overflow-wrap: anywhere; }
+
+.status-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2px 12px;
+  margin: 6px 0 0;
+  font-size: 15px;
+}
+.status-grid dt { display: inline; font-weight: 400; color: #333; }
+.status-grid dt::after { content: ": "; }
+.status-grid dd { display: inline; margin: 0; font-weight: 700; }
+
+main { padding: 0 12px calc(env(safe-area-inset-bottom) + 24px); }
+
+section { padding: 16px 0; border-bottom: 1px solid #bbb; }
+h2 { margin: 0 0 10px; font-size: 22px; }
+
+button {
+  display: block;
+  width: 100%;
+  min-height: 60px;
+  margin: 10px 0;
+  padding: 10px 14px;
+  border: 0;
+  border-radius: 10px;
+  color: #fff;
+  background: #0b5d3b;
+  font: inherit;
+  font-weight: 700;
+}
+button:disabled { background: #777; }
+button.small { width: auto; min-height: 48px; margin: 0; flex: none; }
+button[aria-pressed="true"] { background: #a33a00; }
+
+.big-number {
+  font-size: 88px;
+  font-weight: 800;
+  line-height: 1.05;
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+
+.readout { margin: 12px 0 0; }
+.readout > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 6px 0;
+  border-top: 1px solid #ddd;
+}
+.readout dt { flex: 1; }
+.readout dd { margin: 0; font-weight: 700; text-align: right; overflow-wrap: anywhere; }
+
+.label { margin: 0; color: #333; font-size: 16px; }
+.note { margin: 8px 0 0; color: #333; font-size: 15px; }
+.verdict { margin: 12px 0 0; font-weight: 700; }
+.problem { margin: 8px 0; color: #a30000; font-weight: 700; }
+.mono { margin: 0 0 8px; font-family: ui-monospace, Menlo, monospace; font-size: 16px; overflow-wrap: anywhere; }
+.outcome { margin: 10px 0; padding: 10px; background: #f1f1f1; border-radius: 8px; font-size: 16px; white-space: pre-wrap; overflow-wrap: anywhere; }
+
+.banner { margin-top: 8px; padding: 8px 10px; background: #ffe9a8; border-radius: 8px; }
+.banner p { margin: 0; font-weight: 700; }
+.banner button { margin: 8px 0 0; }
+
+.links a { display: block; padding: 16px 0; font-size: 20px; font-weight: 700; color: #0b5d3b; }
+
+label { display: block; margin-top: 10px; font-size: 16px; }
+input, textarea {
+  width: 100%;
+  padding: 12px;
+  border: 2px solid #666;
+  border-radius: 8px;
+  font: inherit;
+  font-size: 16px; /* below 16px iPhones zoom in when the box is tapped */
+}
+input { min-height: 52px; }
+
+#copy-fallback { scroll-margin-top: 180px; }
+
+.log {
+  margin: 0;
+  font: 13px/1.4 ui-monospace, Menlo, monospace;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}

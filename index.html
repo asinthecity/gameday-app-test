@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Game Day Spike</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icon-180.png">
+  <link rel="apple-touch-icon" href="icon-180.png">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Spike">
+  <meta name="theme-color" content="#0b5d3b">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Status: stays pinned to the top of the screen -->
+  <header id="status">
+    <div class="top-row">
+      <div id="version" class="version">...</div>
+      <button id="copy-btn" type="button" class="small">Copy results</button>
+    </div>
+    <dl class="status-grid">
+      <div><dt>Mode</dt><dd id="st-mode">...</dd></div>
+      <div><dt>Network</dt><dd id="st-online">...</dd></div>
+      <div><dt>Worker</dt><dd id="st-sw">...</dd></div>
+      <div><dt>Ready in</dt><dd id="st-ready">...</dd></div>
+      <div><dt>First record</dt><dd id="st-first">...</dd></div>
+      <div><dt>Record age</dt><dd id="st-age">...</dd></div>
+    </dl>
+    <p id="copy-note" class="note" hidden></p>
+    <div id="update-banner" class="banner" hidden>
+      <p id="update-text"></p>
+      <button id="update-btn" type="button" hidden>Update</button>
+    </div>
+  </header>
+
+  <main>
+    <section>
+      <h2>Saving</h2>
+      <p class="label">Last confirmed number</p>
+      <div id="shown" class="big-number">-</div>
+      <p id="write-error" class="problem" hidden></p>
+      <button id="record-btn" type="button">Record action</button>
+      <button id="loop-btn" type="button">Start writing</button>
+      <dl class="readout">
+        <div><dt>Total entries</dt><dd id="rd-total">...</dd></div>
+        <div><dt>Highest number</dt><dd id="rd-highest">...</dd></div>
+        <div><dt>Missing numbers</dt><dd id="rd-missing">...</dd></div>
+        <div><dt>Last shown before closing</dt><dd id="rd-last-shown">...</dd></div>
+        <div><dt>Saved from Home Screen / tab</dt><dd id="rd-modes">...</dd></div>
+        <div><dt>This open started</dt><dd id="rd-started">...</dd></div>
+        <div><dt>Open number</dt><dd id="rd-opens">...</dd></div>
+        <div><dt>Previous open</dt><dd id="rd-prev-open">...</dd></div>
+      </dl>
+      <p id="rd-verdict" class="verdict">...</p>
+      <p class="note">The proof: every number you saw on screen is still stored. "Last shown" is only a rough guide and can be a little behind what you saw.</p>
+    </section>
+
+    <section>
+      <h2>Storage</h2>
+      <button id="persist-btn" type="button">Ask to keep data (persist)</button>
+      <button id="persisted-btn" type="button">Check persisted</button>
+      <button id="estimate-btn" type="button">Check storage estimate</button>
+      <dl class="readout">
+        <div><dt>persist() answer</dt><dd id="rd-persist">...</dd></div>
+        <div><dt>persisted() now</dt><dd id="rd-persisted">...</dd></div>
+        <div><dt>Estimate</dt><dd id="rd-estimate">...</dd></div>
+      </dl>
+    </section>
+
+    <section>
+      <h2>Game in progress</h2>
+      <button id="game-btn" type="button" aria-pressed="false">Game in progress: ...</button>
+    </section>
+
+    <section>
+      <h2>Offline and updates</h2>
+      <dl class="readout">
+        <div><dt>Controlled by worker</dt><dd id="rd-controlled">...</dd></div>
+        <div><dt>Stored versions</dt><dd id="rd-caches">...</dd></div>
+        <div><dt>Last update check</dt><dd id="rd-update-check">...</dd></div>
+      </dl>
+    </section>
+
+    <section>
+      <h2>File export</h2>
+      <p class="label">Game ID</p>
+      <p id="game-id" class="mono">...</p>
+      <button id="export-btn" type="button">Export test game</button>
+      <p id="export-result" class="outcome" hidden></p>
+      <div id="export-links" class="links" hidden></div>
+    </section>
+
+    <section>
+      <h2>Google Sheet</h2>
+      <label for="sheet-url">Apps Script web address</label>
+      <input id="sheet-url" type="url" inputmode="url" autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false">
+      <label for="sheet-secret">Secret</label>
+      <input id="sheet-secret" type="password" autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false">
+      <button id="send-btn" type="button">Send</button>
+      <button id="send-again-btn" type="button">Send same game again</button>
+      <button id="new-game-btn" type="button">New game ID</button>
+      <button id="check-btn" type="button">Check</button>
+      <dl class="readout">
+        <div><dt>Waiting to send</dt><dd id="rd-waiting">...</dd></div>
+      </dl>
+      <button id="retry-btn" type="button">Retry</button>
+      <p id="sheet-result" class="outcome" hidden></p>
+    </section>
+
+    <section>
+      <h2>Results</h2>
+      <div id="copy-fallback" hidden>
+        <p class="problem">Could not copy. Select this text and copy it by hand.</p>
+        <textarea id="copy-text" rows="10" readonly></textarea>
+      </div>
+      <pre id="log" class="log"></pre>
+    </section>
+  </main>
+
+  <script src="version.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
